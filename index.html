@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge">
+        <title>Library</title>
+        <meta name="description" content="">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <link rel="icon" type="image/svg+xml" href="/book-reader.svg">
+        <link rel="stylesheet" href="css/style.css">
+        <link rel="stylesheet" href="css/all.css">
+    </head>
+    <body>
+        <header class="header"><p>The Library</p></header>
+        
+        <div class="modal__div" id="modalBox">
+            <div class="modal__div-content">
+                <button class="btn-close modal__btn-close" id="modalBoxClose">+</button>
+                <p class="modal-content__p">Add a book</p>
+                <form class="modal__form" id="bookForm" action="" autocomplete="off">
+                    <input class="form__input" id="inputTitle" type="text" placeholder="Title" required>
+                    <p class="error__p" id="errorPara"></p>
+                    <input class="form__input" id="inputAuthor" type="text" placeholder="Author" required>
+                    <input class="form__input" id="inputPages" type="number" placeholder="Pages" min="1" required>
+                    <div class="form__div-isread">
+                        <label for="is-read">Finished reading?</label>
+                        <label class="switch">
+                            <input name="is-read" type="checkbox" class="input-book-read" id="inputRead">
+                            <span class="input-slider"></span>
+                        </label>
+                    </div>
+                    <button class="btn submit" id="btnSubmit" type="submit">Submit</button>
+                </form>
+            </div>
+        </div>
+
+
+        <div class="container-library">
+            <div class="container-books">
+                <!-- <div class="tile">
+                    <button class="btn-trash">X</button>
+                    <h2 class="book-title">The Hobbit</h2>
+                    <p class="book-author">J.R.R. Tolkien</p>
+                    <p class="book-pages">Pages: 555</p>
+                    <input type="checkbox" class="book-read"></input>
+                </div> -->
+                
+                
+            </div>
+            <div class="container-right-bar">
+                <button class="btn add-book" id="addBook">+</button>
+            </div>
+        </div>
+        <script src="script.js" async defer></script>
+    </body>
+</html>

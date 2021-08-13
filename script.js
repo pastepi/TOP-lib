@@ -34,7 +34,6 @@ addBookForm.addEventListener('submit', function(e) {
         handleSubmitSuccess();
         modalBox.style.display = 'none';
     }
-    
 })
 
 
@@ -57,7 +56,7 @@ let myLibrary = [
 
 class Book {
     constructor(title, author, pages, read) {
-        this.id = myLibrary.length;
+        this.id = myLibrary.length + 1;
         this.title = title;
         this.author = author;
         this.pages = pages;
@@ -65,8 +64,83 @@ class Book {
     }
 }
 
-const createBookTile = (book, i) => {
+const createBookTile = (book, index) => {
+    bookcase.appendChild(createBookElement(book, index));
+}
+
+function displayBooks(collection) {
+    collection.forEach(createBookTile);
+}
+
+
+function handleBtnSubmitBook(title, author, pages, read) {
+    if (myLibrary.some((book) => { 
+        return book.title === title;
+    })) {
+        errorMsg.textContent = 'Book with the same title already in library';
+        errorMsg.classList.add('active');
+        return false;
+    } else {
+        let newPosition = new Book(title, author, parseInt(pages), read);
+        createBookTile(newPosition, newPosition.id - 1);
+        myLibrary.push(newPosition);
+        updateBooksLocalStorage(myLibrary);
+        return true;
+    }
+}
+
+function handleSubmitSuccess() {
+    inputTitle.value = '';
+    inputAuthor.value = '';
+    inputPages.value = '';
+    inputRead.checked = false;
+    errorMsg.classList.remove('active');
+}
+
+function handleTrashBook() {    // Click handler for 'x' on booktile
     
+    const divConfirmDel = document.createElement('div');
+    const containerDel = document.createElement('div');
+    const spanConfirmText = document.createElement('span');
+    const spanCheck = document.createElement('i');
+    const spanCross = document.createElement('i');
+
+    divConfirmDel.classList.add('div-confirm-del');
+    containerDel.classList.add('container-del');
+    spanConfirmText.classList.add('span-confirm-text');
+    spanCheck.classList.add('far', 'fa-check-circle');
+    spanCross.classList.add('far', 'fa-times-circle');
+
+    spanConfirmText.textContent = 'Delete this book?';
+
+    containerDel.appendChild(spanCheck);
+    containerDel.appendChild(spanCross);
+
+    divConfirmDel.append(spanConfirmText);
+    divConfirmDel.appendChild(containerDel);
+
+    this.parentElement.appendChild(divConfirmDel);
+
+    let that = this;
+
+    spanCheck.addEventListener('click', function() {
+        let bookIndex = that.parentElement.dataset.index;
+        myLibrary.splice(bookIndex, 1);
+        that.parentElement.remove();
+        updateBooksLocalStorage(myLibrary);
+        
+        let allBooks = document.querySelectorAll('.tile');  // Re-index the books
+        allBooks.forEach((book, i) => {
+            book.dataset.index = i;
+        })
+    })
+
+    spanCross.addEventListener('click', () => {
+        divConfirmDel.remove();
+    })
+}
+
+function createBookElement(book, i) {
     // Creating elements for Book Tile 
     const tile = document.createElement('div');
 
@@ -83,7 +157,7 @@ const createBookTile = (book, i) => {
 
     // Adding classes
     tile.classList.add('tile');
-    tile.dataset.index = `${i + 1}`;
+    tile.dataset.index = `${i}`;
     bookTrashBtn.classList.add('btn-close', 'tile__btn-trash');
     bookTitle.classList.add('book-title');
     bookAuthor.classList.add('book-author');
@@ -96,7 +170,7 @@ const createBookTile = (book, i) => {
     
     spanSlider.classList.add('status-slider');
 
-    // Toggle El structure
+    // Toggle element
     bookReadLabel.appendChild(bookRead);
     bookReadLabel.appendChild(spanSlider);
 
@@ -131,88 +205,38 @@ const createBookTile = (book, i) => {
     bookTrashBtn.addEventListener('click', handleTrashBook);
 
     // Toggling Read/Unread
-    bookRead.addEventListener('click', function() {
+    bookRead.addEventListener('change', function() {
         let bookTile = this.parentElement.parentElement.parentElement;
-        let bookIndex = bookTile.dataset.index - 1;
+        let bookIndex = bookTile.dataset.index;
         myLibrary[bookIndex].read = this.checked;
+        updateBooksLocalStorage(myLibrary);
         bookTile.classList.toggle('unread');
         bookTitle.classList.toggle('text-unread');
         bookAuthor.classList.toggle('text-unread');
         bookPages.classList.toggle('text-unread');
         spanRead.classList.toggle('text-unread');
     })
-
-    bookcase.appendChild(tile);
+    return tile;
 }
 
-function displayBooks(collection) {
-    collection.forEach(createBookTile)
-}
+// Local storage handling
 
-displayBooks(myLibrary);
-
-
-
-function handleBtnSubmitBook(title, author, pages, read) {
-    if (myLibrary.some((book) => { 
-        return book.title === title;
-    })) {
-        errorMsg.textContent = 'Book with the same title already in library';
-        errorMsg.classList.add('active');
-        return false;
+function populateStorage(myBooks) {
+    let storedArray = localStorage.getItem("localLibrary");
+    if (!storedArray) {
+        storedArray = JSON.stringify(myBooks);
+        localStorage.setItem("localLibrary", storedArray);
     } else {
-        let newPosition = new Book(title, author, parseInt(pages), read);
-        createBookTile(newPosition, newPosition.id);
-        myLibrary.push(newPosition);
-        return true;
+        myLibrary = JSON.parse(storedArray);
     }
 }
 
-function handleSubmitSuccess() {
-    inputTitle.value = '';
-    inputAuthor.value = '';
-    inputPages.value = '';
-    inputRead.checked = false;
-    errorMsg.classList.remove('active');
+function updateBooksLocalStorage(myBooks) {
+    let storedArray = JSON.stringify(myBooks);
+    localStorage.setItem("localLibrary", storedArray);
 }
 
-function handleTrashBook() {
-    
-    const divConfirmDel = document.createElement('div');
-    const containerDel = document.createElement('div');
-    const spanConfirmText = document.createElement('span');
-    const spanCheck = document.createElement('i');
-    const spanCross = document.createElement('i');
+// Calling functions
 
-    divConfirmDel.classList.add('div-confirm-del');
-    containerDel.classList.add('container-del');
-    spanConfirmText.classList.add('span-confirm-text');
-    spanCheck.classList.add('far', 'fa-check-circle');
-    spanCross.classList.add('far', 'fa-times-circle');
-
-    spanConfirmText.textContent = 'Delete this book?';
-
-    containerDel.appendChild(spanCheck);
-    containerDel.appendChild(spanCross);
-
-    divConfirmDel.append(spanConfirmText);
-    divConfirmDel.appendChild(containerDel);
-
-    this.parentElement.appendChild(divConfirmDel);
-
-    spanCheck.addEventListener('click', () => {
-        let bookIndex = this.parentElement.dataset.index - 1;
-        myLibrary.splice(bookIndex, 1);
-        this.parentElement.remove();
-        
-        let allBooks = document.querySelectorAll('.tile');  // Re-index the books
-        allBooks.forEach((book, i) => {
-            book.dataset.index = i + 1;
-        })
-    })
-
-    spanCross.addEventListener('click', () => {
-        divConfirmDel.remove();
-    })
-
-}
+populateStorage(myLibrary);
+displayBooks(myLibrary);

@@ -98,6 +98,7 @@ body {
 
 .tile {
     display: flex;
+    position: relative;
     align-items: center;
     flex-direction: column;
     min-width: var(--tile-width);
@@ -108,8 +109,6 @@ body {
     box-shadow: 1px 1px 5px 1px rgb(0, 0, 0);
     flex: 1;
 }
-
-
 
 /* BOOK TILES */
 
@@ -159,7 +158,6 @@ body {
     border-bottom: 1px solid rgb(139, 139, 139);
     user-select: none;
 }
-
 
 .span-confirm-text {
     font-size: 1.25rem;
